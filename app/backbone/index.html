@@ -1,0 +1,127 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" media="screen" href="css/reset.css">
+	<link rel="stylesheet" type="text/css" media="screen" href="css/styles.css">
+	<link rel="stylesheet" type="text/css" media="screen" href="css/nestable.css">
+</head>
+<body>
+	<h1>my.todos</h1>
+	<input type="text" id="sss" placeholder="Add new todo, type here ..." size="30"/>
+	<button id="add-todo">Add</button>
+
+	<div class="cf nestable-lists">
+		<div class="dd" id="nestable">
+    	<ol class="dd-list" id="todo-list">
+      </ol>
+    </div>
+	</div>
+
+	<script src="lib/jquery-2.0.1.js"></script>
+	<script src="lib/json2.js"></script>
+	<script src="lib/underscore-1.4.4.js"></script>
+	<script src="lib/backbone-1.0.0.js"></script>
+	<script src="lib/jquery.nestable.js"></script>
+
+	<script>
+		var globalCount=1;
+		(function ($) {
+
+
+			var updateOutput = function(e)
+		    {
+		        var list   = e.length ? e : $(e.target);
+		        // var output = list.data('output');
+		        // if (window.JSON) {
+		            // output.val(window.JSON.stringify(list.nestable('serialize')));//, null, 2));
+	           	if(list.nestable('serialize') > 0)
+					this.nestedList = JSON.stringify(list.nestable('serialize'));
+				// else
+				// 	this.nestedList = [];
+		        // } else {
+		        //     output.val('JSON browser support required for this demo.');
+		        // }
+		    };
+
+		    // activate Nestable for list 1
+		    $('#nestable').nestable({ group: 1 }).on('change', updateOutput);
+		    // $('#nestable').nestable();
+		    updateOutput($('#nestable').data('output', $('#nestable-output')));
+
+				Todo = Backbone.Model.extend({
+			    //Create a model to hold friend atribute
+			    defaults: {
+	            name: '',
+	            prio: 0,
+	            parent: 0,
+	            done: false
+	        },
+	        initialize: function(){
+	            console.log('Todo '+this.get('name')+' created.');
+	        }
+	  		});
+
+			TodoList = Backbone.Collection.extend({
+				//This is our Friends collection and holds our Friend models
+			    initialize: function (models, options) {
+			    	this.bind("add", options.view.addFriendLi);
+			      	//Listen for new additions to the collection and call a view function if so
+			    }
+			});
+
+		  	AppView = Backbone.View.extend({
+		    	el: $("body"),
+		    	initialize: function () {
+		      		this.todos = new TodoList( null, { view: this });
+
+			      	//check if data is already stored and load
+			    },
+			    events: {
+			      "click #add-todo":  "showPrompt",
+			      "keypress #sss": "showKey",
+			      "click #cb_done_": "done"
+			    },
+			    showPrompt: function () {
+			      var value = $('#sss').val();//prompt("Who is your friend?");
+			      var todo_model = new Todo({ name: value });
+			      //Add a new friend model to our friend collection
+			      this.todos.add( todo_model );
+			    },
+
+				showKey: function(e){
+					if(e.keyCode === 13){
+						var value = $('#sss').val();//prompt("Who is your friend?");
+				      	var todo_model = new Todo({ name: value });
+				      	//Add a new friend model to our friend collection
+				      	this.todos.add( todo_model );
+					}
+				},
+
+				done: function(elem){
+					console.log('clicked');
+					elem.remove();
+
+					this.todos.remove();
+
+				},
+
+				addFriendLi: function (model) {
+			    	var html = '<li class="dd-item dd3-item" data-id="'+globalCount+'"><div class="dd-handle dd3-handle">Drag</div><div class="dd3-content"><input type="checkbox" id="cb_done_'+globalCount+'"/>'+model.get('name')+'</div></li>';
+			      	//The parameter passed is a reference to the model that was added
+			      	$("#todo-list").append(html);
+			      	globalCount++;
+			      	$("#sss").val('');
+			      	// saveStructure();
+			      	console.log(this.nestedList);
+			    }
+	  		});
+
+	  		var appview = new AppView;
+		})(jQuery);
+	</script>
+
+
+
+</body>
+</html>
