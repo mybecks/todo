@@ -1,0 +1,20 @@
+extends layout
+block content
+  h2 My Todos
+  nav(class='navbar navbar-default', role='navigation')
+    ul(class='nav navbar-nav')
+      li(class='active')
+        a(href='/addProject', ng-click="createNewProject") Create Project
+    ul(class='nav navbar-nav navbar-right')
+      li.dropdown
+        a(class='dropdown-toggle', href='#', data-toggle='dropdown') Settings <b class="caret"></b>
+        ul.dropdown-menu
+          li: a(href='#') Data Provider Settings
+          li: a(href='#') Another Action
+          li: a(href='#') Somthing else here
+          li: a(href='#') Separeted Link
+  div.row(ng-view)
+    
+
+  script(src='js/services.js')
+  script(src='js/directives.js')

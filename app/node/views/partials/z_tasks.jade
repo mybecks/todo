@@ -1,0 +1,7 @@
+//- extends ../index
+//- block tasks
+div.input-group
+  span.input-group-addon New Task
+  input(type='text', class='form-control', placeholder='Enter new task')
+ul(ng-repeat="task in tasks")
+  li {{task.text}}
